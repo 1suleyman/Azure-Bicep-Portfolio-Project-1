@@ -139,17 +139,10 @@ Here's what I gained from this hands-on build:
 
 ---
 
-## 🗒️ Want to Learn From Me?
+## 🗒️ Want to Learn with Me?
 
 This project is documented step-by-step so others can follow along too.  
 If you’re breaking into cloud engineering or DevOps, this is a great place to start.
 
 Feel free to fork this repo, tweak the design, or reach out to connect.  
 **Let’s grow together.**
-
----
-
-## 📣 Let’s Connect!
-
-**👋 I'm Suleyman – Cloud Learner, Builder, Sharer.**  
-If you're working on a similar project or breaking into Azure too, let’s connect on [LinkedIn](linkedin.com/in/suleyman-m-a74768221).
