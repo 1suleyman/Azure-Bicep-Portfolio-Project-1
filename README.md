@@ -1,147 +1,143 @@
-# 🌩️ Azure Bicep Portfolio Project – Multi-Region App Infrastructure
-
-**Build scalable, secure, and modular Azure infrastructure using Bicep — from scratch.**
-
----
-
-## 🎯 Overview
-
-This is a **hands-on, real-world Infrastructure as Code (IaC) project** using **Azure Bicep** — designed not only to solidify your learning but also to serve as a **portfolio-quality deployment** for recruiters and a guide for other learners.
-
-You'll act as the Infrastructure Engineer for a global toy company rolling out a new multi-region app. Your mission: build cloud-native infrastructure that’s modular, secure, environment-aware, and production-ready — all using Azure-native tooling.
-
-> 📢 Whether you're showcasing your cloud skills, studying for certification, or preparing for DevOps interviews — this project is your proving ground.
+# 🌩️ Azure Bicep Portfolio Project: Toy Launch Infrastructure 🚀  
+**A hands-on, real-world Infrastructure-as-Code (IaC) project built with Azure Bicep**
 
 ---
 
-## 🌍 Real-World Scenario
+## 🧠 Introduction
 
-Your company is launching a new **smart teddy bear** app in several countries. The app requires:
+After completing several guided Azure Bicep exercises (01–09), I wanted to push myself further by applying everything I’d learned into a standalone, production-inspired project. This is that project.
 
-- Secure backend services (SQL)
-- High availability (multi-region)
-- VNet isolation (frontend/backend)
-- Scalable hosting (App Service)
-- Optional CDN acceleration (via toggle)
-- Secret handling with Key Vault
-- Dev and Prod environment separation
+I treated it like I would a real-world client scenario: a multi-region toy company launching a new product (our fictional “Smart Teddy Bear”), needing secure, scalable infrastructure — with clean code, environment-aware deployments, and modular architecture.
+
+This was more than just deploying a few services. I wrote reusable modules, tested conditional logic, looped deployments across regions, and exposed outputs — all in Bicep. Plus, I learned how to make it look great on a resume too 😉
 
 ---
 
-## 🧰 Technologies & Services
+## 🗺️ Scenario Summary
 
-| Technology             | Purpose                                     |
-|------------------------|---------------------------------------------|
-| **Azure Bicep**        | Infrastructure as Code                      |
-| **Azure App Service**  | Hosting the app frontend                    |
-| **Azure SQL Database** | Regional data storage                       |
-| **Azure Key Vault**    | Secure secret storage                       |
-| **Azure CDN** (optional) | Website acceleration                       |
-| **Azure VNet/Subnets** | Network isolation                           |
-| **GitHub Actions**     | CI/CD pipeline (bonus)                      |
-| **VS Code + Bicep**    | Authoring + validation                      |
+Imagine a toy company launching their product website and backend across multiple Azure regions. Some environments (like **Production**) need added compliance features (like **auditing**, **VNet integration**, and a **CDN**) — while others (like **Development**) do not.
+
+**As the cloud engineer,** my job was to:
+
+✅ Build that infrastructure using Infrastructure as Code  
+✅ Ensure it's environment-aware (Prod vs Dev)  
+✅ Keep the code clean, modular, and scalable  
 
 ---
 
-## 🧠 What You’ll Practice
+## 🔧 Technologies I Used
 
-✅ Real-world IaC with modular Bicep files  
-✅ Deploying across **multiple Azure regions** using loops  
-✅ Controlling resources with `if()` conditions  
-✅ Creating **reusable modules** for App, DB, and CDN  
-✅ Managing secrets with Key Vault references  
-✅ Using outputs to share info between modules or pipelines  
-✅ Structuring IaC projects for scale and clarity
+- 🏗️ **Azure Bicep** – Main IaC language
+- 🖥️ **Azure App Service** – Host the web app
+- 🧠 **Azure SQL** – App database backend
+- 📦 **Azure Storage** – Static content + CDN origin
+- 📡 **Azure CDN** – (Optional) Content delivery
+- 🌐 **Azure Virtual Network** – Subnet separation
+- 🔒 **Azure Key Vault** – Secure secrets management
+- 💻 **Visual Studio Code** – Dev environment
+- 🧪 **GitHub Actions** – CI/CD (Bonus task)
 
 ---
 
-## 🗂️ File Structure
+## 🏗️ Architecture at a Glance
+
+This project deploys the following cloud resources:
+
+| Component | Details |
+|----------|---------|
+| SQL Servers | One in each region, secured & optionally audited |
+| Virtual Networks | Separate subnets for frontend/backend |
+| App Service | Hosted web app with HTTPS |
+| CDN | Only deployed for production |
+| Key Vault | Secrets stored securely via references |
+| Outputs | Hostnames (FQDNs) exposed for DevOps use |
+
+Everything is deployed using **modular** Bicep files and **parameterized** for easy re-use.
+
+📸 *[See architecture diagram here](./architecture.png)*
+
+---
+
+## 🧱 File Structure
 
 ```
-azure-bicep-portfolio/
+Azure-Bicep-ToyCompany-Infrastructure/
 │
-├── main.bicep                     # Root deployment file
-├── main.parameters.dev.json       # Parameters for Dev
-├── main.parameters.prod.json      # Parameters for Prod
+├── main.bicep                  # Root deployment file
+├── main.parameters.dev.json    # Parameters for Dev
+├── main.parameters.prod.json   # Parameters for Prod
 │
 └── modules/
-    ├── app.bicep                  # App Service and Plan
-    ├── cdn.bicep                  # CDN Profile and Endpoint
-    └── database.bicep             # SQL Server, DB, Auditing
+    ├── app.bicep               # App Service & Plan
+    ├── cdn.bicep               # CDN Profile & Endpoint (optional)
+    └── database.bicep          # SQL Server, DB, Auditing
 ```
 
 ---
 
-## 🚀 Project Setup & Deployment
+## ✅ Features I Built
 
-### ✅ Step 1: Install Tools
+- [x] Modularized infrastructure with reusable components
+- [x] Conditional deployment (`if()` statements) for environments
+- [x] For-each loops to deploy resources to multiple regions
+- [x] Secure secret handling with Azure Key Vault references
+- [x] Output expressions for FQDNs and resource names
+- [x] Virtual Network creation with dynamic subnet definitions
+- [x] Optional CDN setup for Production
+- [x] JSON parameter files for environment-specific deployments
+
+---
+
+## 🚀 How to Deploy It Yourself
 
 ```bash
+# Install Azure Bicep CLI (if not installed)
 az bicep install && az bicep upgrade
+
+# Log into Azure
 az login
-```
 
-### ✅ Step 2: Create Resource Group
-
-```bash
+# Create a resource group
 az group create --name BicepRG --location westus
-```
 
-### ✅ Step 3: Deploy to Development
-
-```bash
+# Deploy the Dev environment
 az deployment group create \
   --resource-group BicepRG \
-  --name dev-deployment \
+  --name main-dev \
   --template-file main.bicep \
   --parameters main.parameters.dev.json
-```
 
-### ✅ Step 4: Deploy to Production
-
-```bash
+# Deploy the Production environment
 az deployment group create \
   --resource-group BicepRG \
-  --name prod-deployment \
+  --name main-prod \
   --template-file main.bicep \
   --parameters main.parameters.prod.json
 ```
 
 ---
 
-## 🧪 What to Look For
+## 💡 What I Learned
 
-- [x] Are **App Service** and **SQL Database** deployed per region?
-- [x] Is **auditing enabled** in `prod` but not in `dev`?
-- [x] Is the **CDN deployed conditionally** based on the `deployCdn` flag?
-- [x] Are **outputs** (e.g., FQDNs) available after deployment?
-- [x] Are **networks isolated** using VNet + Subnets?
-- [x] Is **secret data pulled securely** from Key Vault?
+This wasn’t just about syntax — it was about strategy.
 
----
+Here's what I gained from this hands-on build:
 
-## 🧠 Bonus Challenges (Level Up)
-
-| Challenge                      | Notes |
-|-------------------------------|-------|
-| [ ] Setup GitHub Actions for infra CI/CD  | Push to `main` → Deploy |
-| [ ] Add `az deployment what-if` validation | Preview before applying |
-| [ ] Deploy App content via pipeline       | Automate app zip deploy |
-| [ ] Purge CDN on content update           | Force refresh |
-| [ ] Track drift or use `az bicep lint`    | Stay in sync |
-| [ ] Add a blog post to document it        | Showcase your learning journey |
+- **Breaking down infrastructure** into reusable modules
+- **Thinking environment-first**: Dev ≠ Prod
+- **Looping deployments** across regions in a clean, scalable way
+- **Using `if()` & decorators** to control behavior and improve security
+- **Understanding outputs** for real-world automation and DevOps
+- **Simulating real team requirements** — not everything is always needed (like a CDN)
 
 ---
 
-## 📘 Learning Outcomes
+## 🧪 Bonus Goals (In Progress)
 
-At the end of this project, you’ll be able to:
-
-- Build **multi-region Bicep templates**
-- Use **loops, conditions, decorators, outputs**
-- Reference **Key Vault secrets securely**
-- Understand modularization in IaC
-- Communicate infra design clearly — to peers *and* employers
+- [ ] CI/CD using GitHub Actions for infra changes
+- [ ] Automated testing for Bicep templates (`what-if`, `validate`)
+- [ ] Write a blog post about the lessons learned
+- [ ] Bonus: Deploy a frontend app and wire up DNS
 
 ---
 
