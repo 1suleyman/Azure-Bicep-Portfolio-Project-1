@@ -109,4 +109,3 @@ az deployment group create \
 ## 📘 License
 
 This project is for personal learning and portfolio purposes.
-```
