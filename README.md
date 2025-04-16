@@ -143,7 +143,7 @@ At the end of this project, you’ll be able to:
 - Understand modularization in IaC
 - Communicate infra design clearly — to peers *and* employers
 
---
+---
 
 ## 🗒️ Want to Learn From Me?
 
@@ -158,4 +158,4 @@ Feel free to fork this repo, tweak the design, or reach out to connect.
 ## 📣 Let’s Connect!
 
 **👋 I'm Suleyman – Cloud Learner, Builder, Sharer.**  
-If you're working on a similar project or breaking into Azure too, let’s connect on [LinkedIn](https://www.linkedin.com/in/your-profile).
+If you're working on a similar project or breaking into Azure too, let’s connect on [LinkedIn](linkedin.com/in/suleyman-m-a74768221).
