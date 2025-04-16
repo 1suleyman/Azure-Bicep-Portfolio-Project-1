@@ -54,8 +54,6 @@ This project deploys the following cloud resources:
 
 Everything is deployed using **modular** Bicep files and **parameterized** for easy re-use.
 
-📸 *[See architecture diagram here](./architecture.png)*
-
 ---
 
 ## 🧱 File Structure
