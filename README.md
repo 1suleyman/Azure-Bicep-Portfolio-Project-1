@@ -1,137 +1,211 @@
-# 🌍 Azure Bicep Multi-Region Cloud Infrastructure Project
+# 🌍 Toyland Azure Infrastructure — Bicep Portfolio Project
 
 ## 🔍 Overview
+This is a full-scale, **multi-region Azure infrastructure project** built using **Bicep**, Microsoft’s Infrastructure-as-Code (IaC) language.
 
-This project simulates the **launch of a global toy company’s cloud infrastructure**, designed entirely with **Azure Bicep** – Microsoft's Infrastructure as Code (IaC) solution. The system supports multiple environments (Dev/Prod), multi-region deployments, secure backend services, and optional content delivery via Azure CDN. It mirrors enterprise cloud architecture patterns and demonstrates modular, reusable IaC practices.
-
-## ✅ Key Features
-
-### 🚀 Infrastructure Deployment
-- **Multi-region SQL Server deployments** for scalability and resilience
-- **Environment-based logic** for deploying different resources in Dev vs Prod
-- **Conditional auditing and CDN deployment** using `if()` statements
-- **Virtual networks with subnet segmentation** for frontend/backend traffic isolation
-- **Visitor-ready App Service Website** hosted securely with HTTPS
-- **Output logic** to surface hostnames (FQDNs) for integration or monitoring
-
-### ⚙️ Modularity & Reusability
-- All infrastructure is structured into self-contained **Bicep modules**:
-  - `app.bicep` → App Service + Plan  
-  - `database.bicep` → SQL Server, DB, auditing logic  
-  - `cdn.bicep` → CDN Profile + Endpoint (optional)  
-
-### 🔐 Security
-- Secrets like SQL login credentials are **referenced securely from Azure Key Vault**
-- Sensitive parameters are flagged with the `@secure()` decorator
-
-### 🧠 Smart Logic
-- **Loops** (`for`) used to deploy the same resource across regions
-- **Variable loops** for subnet configuration
-- **Output loops** to capture regional FQDNs of deployed services
+The architecture simulates a global product launch for *Toyland* — a smart-toy company deploying apps, databases, virtual networks, and a global CDN. Each piece of infrastructure is modular, reusable, secure, and follows real-world patterns you'd use in a production environment.
 
 ---
 
-## 🧰 Tools & Technologies
+## ✅ Key Concepts Demonstrated
 
-| Tool               | Purpose                                |
-|--------------------|----------------------------------------|
-| **Azure Bicep**    | Define, deploy, and manage resources   |
-| **Azure App Service** | Host production web app              |
-| **Azure SQL**      | Provide a secure backend database      |
-| **Azure Storage**  | Serve static content and logs          |
-| **Azure CDN**      | Improve performance (Prod only)        |
-| **Azure VNet**     | Isolate environments via subnetting    |
-| **Azure Key Vault**| Secure secret management               |
-| **VS Code + Bicep Extension** | Dev environment              |
-| **GitHub Actions** (Optional) | CI/CD integration            |
+- **Multi-region deployment** with looping logic (`for`)
+- **Modular infrastructure** using Bicep modules
+- **Environment-based conditional logic** (e.g., enable auditing in `prod`)
+- **Secure credential handling** using `@secure` and (optionally) Key Vault
+- **Optional resource deployment** using `if()` (e.g., CDN)
+- **Clean, structured outputs** of URLs & FQDNs for integration
 
 ---
 
-## 🗂️ Project Structure
+## 📁 Folder & File Structure
 
 ```
 Azure-Bicep-Portfolio-Project/
 │
-├── main.bicep                     # Root template (Dev/Prod switch)
-├── main.parameters.dev.json       # Parameters for development
-├── main.parameters.prod.json      # Parameters for production
+├── main.bicep                   # Root template that wires everything together
+├── main.parameters.dev.json    # Dev parameters (e.g., F1 SKU, no CDN)
+├── main.parameters.prod.json   # Prod parameters (e.g., P1v2 SKU, auditing, CDN)
 │
 └── modules/
-    ├── app.bicep                  # App Service & Plan logic
-    ├── database.bicep             # SQL Server, DB, and auditing
-    └── cdn.bicep                  # CDN Profile and Endpoint
+    ├── app.bicep               # App Service Plan + App Service
+    ├── database.bicep          # SQL Server + DB (+ auditing in prod)
+    ├── vnet.bicep              # VNet + frontend/backend subnets
+    └── cdn.bicep               # Optional CDN profile + endpoint
 ```
 
 ---
 
-## 🧪 Workflow Summary
+## 🧱 What Each File Does
 
-### 💡 Phase 1: Modular Infra Design
-- Split infrastructure into dedicated Bicep modules
-- Use decorators (`@description`, `@allowed`, `@secure`) to improve parameter clarity
-- Create conditional logic for Prod-only deployments (e.g., auditing)
-
-### 💡 Phase 2: Multi-Region Deployment
-- Define an array of Azure regions (e.g., `westus`, `eastus2`, `eastasia`)
-- Loop over regions to deploy SQL servers and VNETs
-- Use outputs to capture and return all FQDNs from deployed SQL servers
-
-### 💡 Phase 3: CDN Integration (Optional)
-- Add a toggle (`deployCdn`) to optionally deploy Azure CDN
-- Dynamically point CDN to the App Service output as its origin
-- Set HTTPS enforcement on the CDN endpoint
+### `main.bicep` — 🧠 Orchestrator
+- Accepts:
+  - `locations` array
+  - `sqlAdminLogin` / `sqlAdminPassword`
+  - `environment` string (`dev` or `prod`)
+  - `deployCdn` boolean
+- Loops through regions to deploy:
+  - `app.bicep`
+  - `database.bicep`
+  - `vnet.bicep`
+- Conditionally deploys `cdn.bicep`
+- Outputs:
+  - Array of objects: region, app URL, SQL FQDN
 
 ---
 
-## 📦 Deployment Instructions
+### `modules/app.bicep` — 🌐 App Deployment
+- Deploys:
+  - App Service Plan
+  - App Service
+- Accepts:
+  - `location`
+  - `appServicePlanName`
+  - `appName`
+  - `appServicePlanSku` (`F1`, `P1v2`, etc.)
+- Output:
+  - Public App URL (FQDN)
+
+---
+
+### `modules/database.bicep` — 🗄️ SQL Server + DB
+- Deploys:
+  - SQL Server
+  - SQL DB
+  - Storage Account + Auditing **only if** `environment == 'prod'`
+- Accepts:
+  - `location`
+  - `sqlAdminLogin` (secure)
+  - `sqlAdminPassword` (secure)
+  - `sqlServerName`, `sqlDatabaseName`
+  - `sqlSkuName`
+  - `environment`
+- Outputs:
+  - SQL Server Name
+  - SQL FQDN
+
+---
+
+### `modules/vnet.bicep` — 🛡️ Network Isolation
+- Deploys:
+  - VNet per region
+  - Two subnets (`frontend`, `backend`)
+- Accepts:
+  - `location`
+  - `vnetAddressPrefix` (e.g. `10.10.0.0/16`)
+  - `subnets` array: name + IP range
+- Optional Output:
+  - VNet Name
+  - Subnet details
+
+---
+
+### `modules/cdn.bicep` — 🚀 Global Delivery (Optional)
+- Deploys:
+  - CDN Profile
+  - Endpoint pointing to App Service origin
+- Accepts:
+  - `originHostName`
+  - `httpsOnly` (bool)
+- Outputs:
+  - CDN Endpoint FQDN
+
+---
+
+## 🧪 Project Workflow Summary
+
+### 🔹 Phase 1: Modular Infra Design
+- Separate concerns into Bicep modules
+- Use decorators like `@secure`, `@allowed`, and `@description`
+- Add logic for environment-based toggles (e.g., auditing in prod)
+
+### 🔹 Phase 2: Multi-Region Deployment
+- Loop over regions with `for` to deploy apps, DBs, and VNets
+- Generate dynamic names with `uniqueString()` + region
+- Output URLs and FQDNs as a list
+
+### 🔹 Phase 3: CDN Integration (Optional)
+- Toggle CDN with `deployCdn` param
+- Set origin to app FQDN
+- Enforce HTTPS via `isHttpsAllowed`
+
+---
+
+## 🚀 How to Deploy
+
+### 1. Prerequisites
+- Azure CLI + Bicep CLI installed
+- Logged into Azure (`az login`)
+- Resource Group created:
 
 ```bash
-# 1. Install dependencies
-az bicep install && az bicep upgrade
-az login
+az group create --name ToylandRG --location westus
+```
 
-# 2. Create a Resource Group
-az group create --name BicepRG --location westus
+---
 
-# 3. Deploy (Dev or Prod)
+### 2. Deploy the Infrastructure
+
+#### 🔧 Development (no CDN, F1 SKU):
+
+```bash
 az deployment group create \
-  --resource-group BicepRG \
-  --name main \
+  --resource-group ToylandRG \
+  --name dev-deploy \
   --template-file main.bicep \
   --parameters main.parameters.dev.json
 ```
 
+#### 🔐 Production (CDN enabled, P1v2, auditing):
+
+```bash
+az deployment group create \
+  --resource-group ToylandRG \
+  --name prod-deploy \
+  --template-file main.bicep \
+  --parameters main.parameters.prod.json
+```
+
 ---
 
-## 📊 Results
+## 📤 Outputs
 
-- 🚀 **Fully deployed cloud stack** across multiple Azure regions
-- 🔐 **Secure database infrastructure** with conditional auditing
-- 🌐 **Optional CDN integration** to serve content securely and faster
-- 🧱 **Scalable, modular architecture** for future extensions
+After deployment, your `main.bicep` will output something like:
+
+```json
+[
+  {
+    "region": "westus",
+    "appUrl": "https://myApp-westus.azurewebsites.net",
+    "sqlFqdn": "toylandsql-westus.database.windows.net"
+  },
+  ...
+]
+```
 
 ---
 
 ## 📚 What I Learned
 
-- Architecting infrastructure using **modular Bicep design patterns**
-- Creating **regionally distributed resources** with `for` loops
-- Using **output expressions** and Key Vault references in production deployments
-- Applying **real-world IaC best practices** for environment separation
-- Improving **project maintainability** through reuse and abstraction
+- How to write scalable, environment-aware infrastructure using Bicep
+- Looping resources across regions with `for`
+- Applying secure patterns (`@secure`, Key Vault)
+- Using conditional deployments with `if()` and `environment`
+- Structuring code for clarity and reusability — just like in a real-world cloud team
 
 ---
 
-## 🚧 Future Enhancements
+## 🔮 Future Improvements
 
-- [ ] Add **CI/CD with GitHub Actions** for automated validation and deployment
-- [ ] Implement **ARM template testing (`what-if`)** for change previews
-- [ ] Write a **Dev.to blog** to reflect on technical decisions & learning journey
-- [ ] Integrate **monitoring tools** for audit visibility and health checks
+- Add GitHub Actions CI/CD
+- Use Bicep `what-if` to preview changes
+- Add private endpoints to SQL in prod
+- Switch from Azure CDN to Azure Front Door for smarter global routing
+- Write a blog post documenting my design process
 
 ---
 
-## 📘 License
+## 👋 License
 
-This project is open source and free to use for educational and portfolio purposes.
+Open source for learning and portfolio use. Build, fork, and remix it.
 
